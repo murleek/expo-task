@@ -61,6 +61,11 @@ const PostDetailsScreen = () => {
   if (post.isLoading) {
     return (
       <ThemedView className="flex-1 p-4">
+        <Stack.Screen
+          options={{
+            title: `Post #${id}`,
+          }}
+        />
         <View className={clsx(styles.skeleton, "h-5 mb-2 ")} />
         <View className={clsx(styles.skeleton, "h-4 mb-4")} />
         <View className={clsx(styles.skeleton, "h-20 mb-4")} />
@@ -72,6 +77,11 @@ const PostDetailsScreen = () => {
   if (post.error || !post.data) {
     return (
       <ThemedView className="flex-1 p-4">
+        <Stack.Screen
+          options={{
+            title: `Post #${id}`,
+          }}
+        />
         <ThemedText>Error loading post.</ThemedText>
       </ThemedView>
     );
@@ -128,18 +138,17 @@ const PostDetailsScreen = () => {
             <ReactionCount reactions={post.data.reactions} />
 
             <View className={styles.hr} />
+
             <ThemedText className={styles.comments.title}>
               Comments{comments.data ? ` (${comments.data.length})` : ""}
             </ThemedText>
 
-            <CommentForm onSubmit={handleSubmitComment} />
-
             {comments.isLoading && (
               <ThemedView className="mt-2">
-                <View className={clsx(styles.skeleton, "h-8 mb-2")} />
-                <View className={clsx(styles.skeleton, "h-8 mb-2")} />
-                <View className={clsx(styles.skeleton, "h-8 mb-2")} />
-                <View className={clsx(styles.skeleton, "h-8 mb-2")} />
+                <View className={clsx(styles.skeleton, "h-16 mb-2")} />
+                <View className={clsx(styles.skeleton, "h-16 mb-2")} />
+                <View className={clsx(styles.skeleton, "h-16 mb-2")} />
+                <View className={clsx(styles.skeleton, "h-16 mb-2")} />
               </ThemedView>
             )}
           </ThemedView>
@@ -150,6 +159,7 @@ const PostDetailsScreen = () => {
           ) : undefined
         }
       />
+      <CommentForm onSubmit={handleSubmitComment} />
     </ThemedView>
   );
 };
@@ -167,10 +177,10 @@ const styles = {
   hr: "h-[1px] my-2 mt-4 bg-gray-300 dark:bg-gray-700 rounded",
   list: {
     wrapper: "bg-white dark:bg-black flex-1",
-    container: "pb-safe-offset-6 px-4",
+    container: "pb-safe-offset-20 px-4",
   },
   comments: {
-    title: "text-lg font-semibold",
+    title: "text-lg font-semibold py-2",
     item: {
       title: "font-semibold mb-1 text-gray-800 dark:text-gray-200",
       body: "text-gray-600 dark:text-gray-400",

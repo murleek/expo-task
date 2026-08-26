@@ -1,41 +1,44 @@
 import { Post } from "@/api/types";
-import { View, Text } from "react-native";
+import { View, Text, useColorScheme } from "react-native";
 import clsx from "clsx";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { ThumbsDown, ThumbsUp } from "lucide-react-native";
 
 const ReactionCount = ({ reactions }: { reactions: Post["reactions"] }) => {
+  const theme = useColorScheme();
   const tap = Gesture.Tap()
-    .onEnd((_event, success) => {
-      if (success) {
-        alert("Reaction pressed!");
-      }
-    })
+    .onEnd((_event, success) => {})
     .runOnJS(true);
 
   return (
-    <View className={styles.container}>
-      <GestureDetector gesture={tap}>
-        <View className={styles.reactionContainer}>
-          <Text className={clsx(styles.iconText, "text-emerald-500")}>+</Text>
-          <Text className={styles.reactionText}>{reactions?.likes}</Text>
-        </View>
-      </GestureDetector>
-      <GestureDetector gesture={tap}>
-        <View className={styles.reactionContainer}>
-          <Text className={clsx(styles.iconText, "text-red-500")}>-</Text>
-          <Text className={styles.reactionText}>{reactions?.dislikes}</Text>
-        </View>
-      </GestureDetector>
+    <View className={clsx("flex-row rounded-full")}>
+      <View className={styles.container}>
+        <GestureDetector gesture={tap}>
+          <View className={styles.reactionContainer}>
+            <ThumbsDown
+              size={16}
+              color={theme === "dark" ? "white" : "black"}
+            />
+            <Text className={styles.reactionText}>{reactions?.dislikes}</Text>
+          </View>
+        </GestureDetector>
+        <GestureDetector gesture={tap}>
+          <View className={styles.reactionContainer}>
+            <ThumbsUp size={16} color={theme === "dark" ? "white" : "black"} />
+            <Text className={styles.reactionText}>{reactions?.likes}</Text>
+          </View>
+        </GestureDetector>
+      </View>
     </View>
   );
 };
 
 const styles = {
-  container: "flex-row items-center mt-2",
+  container:
+    "flex-row mt-2 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full gap-3",
   reactionContainer:
-    "bg-gray-100 dark:bg-gray-700 rounded-full px-2 py-1 mr-2 flex-row items-center",
-  reactionText: "text-gray-400 dark:text-gray-300 text-sm",
-  iconText: "text-xl leading-none mr-2",
+    "rounded-full px-2 py-1 not-last:mr-2 flex-row items-center",
+  reactionText: "ml-2 text-gray-500 font-bold dark:text-gray-300 text-sm",
 };
 
 export default ReactionCount;

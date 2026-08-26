@@ -3,14 +3,14 @@ import { getJSON, setJSON } from ".";
 
 const KEY = "posts-v1";
 
-interface LocalMutationsState {
+interface PostsState {
   created: Record<number, Post>;
   edited: Record<number, Partial<Post>>;
   deleted: number[];
   nextLocalId: number;
 }
 
-const defaultStore: LocalMutationsState = {
+const defaultStore: PostsState = {
   created: {},
   edited: {},
   deleted: [],
@@ -25,7 +25,7 @@ const write = (store: typeof defaultStore) => {
   setJSON(KEY, store);
 };
 
-const recordLocalPost = (post: Post) => {
+export const recordLocalPost = (post: Post) => {
   const state = readStore();
   const id = state.nextLocalId;
   const created: Post = { ...post, id, isLocalOnly: true };
@@ -67,13 +67,3 @@ export function getEditPatch(id: number): Partial<Post> | undefined {
 export function isDeletedLocally(id: number): boolean {
   return readStore().deleted.includes(id);
 }
-
-export const postsStorage = {
-  readStore,
-  recordLocalPost,
-  recordLocalEdit,
-  recordLocalDelete,
-  getLocalPosts,
-  getEditPatch,
-  isDeletedLocally,
-};

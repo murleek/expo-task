@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addComment } from "@/api/comments";
 import { Comment } from "@/api/types";
 import { commentKeys } from "@/constants/keys";
+import { recordLocalComment } from "@/storage/comments";
 
 let localCommentId = -1;
 
@@ -15,7 +16,14 @@ export function useAddCommentMutation(postId: number) {
       authorName: string;
     }) => {
       await addComment({ body: input.body, postId, userId: input.userId });
-      return input;
+
+      return recordLocalComment({
+        id: localCommentId--,
+        postId,
+        body: input.body,
+        authorName: input.authorName,
+        isLocalOnly: true,
+      });
     },
     onMutate: async (input) => {
       await queryClient.cancelQueries({ queryKey: commentKeys.byPost(postId) });
@@ -38,7 +46,6 @@ export function useAddCommentMutation(postId: number) {
       return { snapshot };
     },
     onError: (_err, _input, ctx) => {
-      console.error("onError", _err, _input);
       if (ctx)
         queryClient.setQueryData(commentKeys.byPost(postId), ctx.snapshot);
     },
