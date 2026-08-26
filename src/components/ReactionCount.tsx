@@ -2,8 +2,9 @@ import { Post } from "@/api/types";
 import { View, Text } from "react-native";
 import clsx from "clsx";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import ThemedText from "./ThemedText";
 
-const ReactionCount = ({ post }: { post: Post }) => {
+const ReactionCount = ({ reactions }: { reactions: Post["reactions"] }) => {
   const tap = Gesture.Tap()
     .onEnd((_event, success) => {
       if (success) {
@@ -17,15 +18,13 @@ const ReactionCount = ({ post }: { post: Post }) => {
       <GestureDetector gesture={tap}>
         <View className={styles.reactionContainer}>
           <Text className={clsx(styles.iconText, "text-emerald-500")}>+</Text>
-          <Text className={styles.reactionText}>{post.reactions?.likes}</Text>
+          <Text className={styles.reactionText}>{reactions?.likes}</Text>
         </View>
       </GestureDetector>
       <GestureDetector gesture={tap}>
         <View className={styles.reactionContainer}>
           <Text className={clsx(styles.iconText, "text-red-500")}>-</Text>
-          <Text className={styles.reactionText}>
-            {post.reactions?.dislikes}
-          </Text>
+          <Text className={styles.reactionText}>{reactions?.dislikes}</Text>
         </View>
       </GestureDetector>
     </View>

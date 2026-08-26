@@ -39,7 +39,7 @@ const PostItem = ({ post }: { post: Post }) => {
             </ThemedText>
           ))}
         </ThemedView>
-        <ReactionCount post={post} />
+        <ReactionCount reactions={post.reactions} />
       </ThemedView>
     </Pressable>
   );

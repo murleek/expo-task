@@ -1,5 +1,6 @@
 import { addComment } from "@/api/comments";
 import CommentItem from "@/components/CommentItem";
+import ReactionCount from "@/components/ReactionCount";
 import ThemedText from "@/components/ThemedText";
 import ThemedView from "@/components/ThemedView";
 import { useComments } from "@/hooks/useComments";
@@ -28,10 +29,10 @@ const PostDetailsScreen = () => {
   if (post.isLoading) {
     return (
       <ThemedView className="flex-1 p-4">
-        <View className="bg-gray-300 h-5 rounded-md mb-2 animate-pulse dark:bg-gray-800" />
-        <View className="bg-gray-300 h-4 rounded-md mb-4 animate-pulse dark:bg-gray-800" />
-        <View className="bg-gray-300 h-20 rounded-md mb-4 animate-pulse dark:bg-gray-800" />
-        <View className="bg-gray-300 h-4 rounded-md mb-4 animate-pulse dark:bg-gray-800" />
+        <View className={clsx(styles.skeleton, "h-5 mb-2 ")} />
+        <View className={clsx(styles.skeleton, "h-4 mb-4")} />
+        <View className={clsx(styles.skeleton, "h-20 mb-4")} />
+        <View className={clsx(styles.skeleton, "h-4 mb-4")} />
       </ThemedView>
     );
   }
@@ -60,7 +61,7 @@ const PostDetailsScreen = () => {
               {post.data.title}
             </ThemedText>
             <ThemedText className={styles.post.author}>
-              Author #{post.data.userId || 0}
+              Author #{post.data.authorId || 0}
             </ThemedText>
             <ThemedText className={styles.post.body}>
               {post.data.body}
@@ -70,6 +71,7 @@ const PostDetailsScreen = () => {
                 <Text className={styles.post.tag}>#{tag}</Text>
               ))}
             </ThemedView>
+            <ReactionCount reactions={post.data.reactions} />
 
             <View className={styles.hr} />
             <ThemedText className={styles.comments.title}>
@@ -81,9 +83,7 @@ const PostDetailsScreen = () => {
                 value={commentDraft}
                 onChangeText={setCommentDraft}
                 placeholder="Write a comment..."
-
                 className={styles.comments.form.input}
-
                 onSubmitEditing={handleSubmitComment}
               />
               <Pressable
@@ -120,10 +120,10 @@ const styles = {
     title: "text-2xl font-bold",
     author: "text-sm text-gray-600 dark:text-gray-400 mb-2",
     body: "text-gray-800 dark:text-gray-200 mb-2",
-    tagsContainer: "flex flex-row flex-wrap mb-2",
+    tagsContainer: "flex flex-row flex-wrap",
     tag: "text-blue-300 py-1 mr-2 rounded-full text-sm font-semibold",
   },
-  hr: "h-[1px] my-2 bg-gray-300 dark:bg-gray-700 rounded",
+  hr: "h-[1px] my-2 mt-4 bg-gray-300 dark:bg-gray-700 rounded",
   list: {
     wrapper: "bg-white dark:bg-black flex-1",
     container: "pb-safe-offset-6 px-4",

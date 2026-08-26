@@ -8,6 +8,13 @@ export interface PostDto {
   userId: number;
 }
 
+export type PostsPageDto = {
+  posts: PostDto[];
+  total: number;
+  skip: number;
+  limit: number;
+};
+
 export interface CommentDto {
   id: number;
   body: string;
