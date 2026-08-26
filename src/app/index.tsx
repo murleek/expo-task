@@ -41,18 +41,20 @@ export default function Home() {
           keyExtractor={(item) => item.id.toString()}
           refreshing={isRefetching}
           onRefresh={onRefresh}
-          className="pb-safe-offset-8"
+          contentContainerClassName="pb-safe-offset-4 bg-white dark:bg-black"
           renderItem={({ item }) => <PostItem post={item} />}
           onEndReachedThreshold={0.5}
           onEndReached={onEndReached}
           scrollEventThrottle={16}
           ListFooterComponent={
             isFetching ? (
-              <ActivityIndicator
-                size="large"
-                color="#0000ff"
-                className="my-4"
-              />
+              <View className="flex-1 items-center justify-center">
+                <ActivityIndicator
+                  size="large"
+                  color="#0000ff"
+                  className="my-4"
+                />
+              </View>
             ) : null
           }
         />

@@ -1,4 +1,4 @@
-import { apiClient } from "./client";
+import { http } from "./client";
 import { PostDto, PostsResponse } from "./types";
 
 export function getPosts(params: {
@@ -7,15 +7,13 @@ export function getPosts(params: {
   search?: string;
 }) {
   if (params.search) {
-    return apiClient<PostsResponse>("/posts/search", {
-      params: { q: params.search, skip: params.skip, limit: params.limit },
-    });
+    return http.get<PostsResponse>("/posts/search", params);
   }
-  return apiClient<PostsResponse>("/posts", { params });
+  return http.get<PostsResponse>("/posts", params);
 }
 
 export function getPost(id: string) {
-  return apiClient<PostDto>(`/posts/${id}`);
+  return http.get<PostDto>(`/posts/${id}`);
 }
 
 export function createPost(data: {
@@ -24,18 +22,16 @@ export function createPost(data: {
   tags: string[];
   userId: number;
 }) {
-  return apiClient<PostDto>("/posts/add", { method: "POST", body: data });
+  return http.post<PostDto>("/posts/add", { body: data });
 }
 
 export function updatePost(
   id: string,
   data: Partial<Pick<PostDto, "title" | "body" | "tags">>,
 ) {
-  return apiClient<PostDto>(`/posts/${id}`, { method: "PUT", body: data });
+  return http.put<PostDto>(`/posts/${id}`, { body: data });
 }
 
 export function deletePost(id: string) {
-  return apiClient<{ id: string; isDeleted: boolean }>(`/posts/${id}`, {
-    method: "DELETE",
-  });
+  return http.delete<{ id: string; isDeleted: boolean }>(`/posts/${id}`);
 }

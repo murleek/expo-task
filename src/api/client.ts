@@ -19,13 +19,15 @@ function buildUrl(path: string, params?: RequestOptions["params"]) {
   const url = new URL(BASE_URL + path);
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined) url.searchParams.set(key, String(value));
+      if (value !== undefined && value !== null) {
+        url.searchParams.append(key, String(value));
+      }
     });
   }
   return url.toString();
 }
 
-export async function apiClient<T>(
+async function apiClient<T>(
   path: string,
   { method = "GET", body, params }: RequestOptions = {},
 ): Promise<T> {
@@ -36,10 +38,25 @@ export async function apiClient<T>(
   });
 
   if (!response.ok) {
-    throw new ApiError(response.status, `Request failed: ${response.status}`);
+    throw new ApiError(
+      response.status,
+      `Request failed: ${response.status} ${path}`,
+    );
   }
 
   return response.json() as Promise<T>;
 }
+
+export const http = {
+  get: <T>(
+    path: string,
+    params?: Record<string, string | number | undefined>,
+  ) => apiClient<T>(path, { method: "GET", params }),
+  post: <T>(path: string, body: unknown) =>
+    apiClient<T>(path, { method: "POST", body: JSON.stringify(body) }),
+  put: <T>(path: string, body: unknown) =>
+    apiClient<T>(path, { method: "PUT", body: JSON.stringify(body) }),
+  delete: <T>(path: string) => apiClient<T>(path, { method: "DELETE" }),
+};
 
 export { ApiError };

@@ -13,7 +13,7 @@ const PostItem = ({ post }: { post: Post }) => {
   const router = useRouter();
 
   const handlePress = useCallback(
-    (id: number) => {
+    (id: string) => {
       prefetchPostDetails(queryClient, id);
       router.navigate({
         pathname: "/post",
@@ -25,7 +25,7 @@ const PostItem = ({ post }: { post: Post }) => {
 
   return (
     <Pressable
-      onPress={handlePress.bind(null, post.id)}
+      onPress={handlePress.bind(null, post.id.toString())}
       android_ripple={{ color: "#ccc" }}
       className={styles.pressable}
     >

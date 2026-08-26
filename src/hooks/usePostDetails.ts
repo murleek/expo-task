@@ -15,11 +15,11 @@ export function usePostDetails(id: string) {
 
 export function prefetchPostDetails(
   queryClient: ReturnType<typeof useQueryClient>,
-  postId: string,
+  id: string,
 ) {
   queryClient.query({
-    queryKey: postKeys.detail(postId),
-    queryFn: async () => mapPost(await getPost(postId)),
+    queryKey: postKeys.detail(id),
+    queryFn: async () => mapPost(await getPost(id)),
     staleTime: 5 * 60_000,
   });
 }
