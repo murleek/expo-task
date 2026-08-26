@@ -1,12 +1,11 @@
-import { Stack } from "expo-router";
-
-import { View, FlatList, ActivityIndicator } from "react-native";
-
-import { usePosts } from "@/hooks/usePosts";
 import { useMemo } from "react";
-import PostItem from "@/components/PostItem";
+import { FlatList, ActivityIndicator } from "react-native";
+import { Stack } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
+
+import PostItem from "@/components/PostItem";
 import ThemedView from "@/components/ThemedView";
+import { usePosts } from "@/hooks/usePosts";
 
 export default function Home() {
   const { data, isFetching, isRefetching, refetch, fetchNextPage } =

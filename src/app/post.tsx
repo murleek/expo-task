@@ -1,30 +1,62 @@
-import { addComment } from "@/api/comments";
+import CommentForm from "@/components/CommentForm";
 import CommentItem from "@/components/CommentItem";
 import ReactionCount from "@/components/ReactionCount";
 import ThemedText from "@/components/ThemedText";
 import ThemedView from "@/components/ThemedView";
+import { useAddCommentMutation } from "@/hooks/useAddCommentMutation";
 import { useComments } from "@/hooks/useComments";
 import { usePostDetails } from "@/hooks/usePostDetails";
 import { clsx } from "clsx";
-import { Stack, useLocalSearchParams } from "expo-router";
-import { useCallback, useState } from "react";
-import { FlatList, Pressable, TextInput, Text, View } from "react-native";
+import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
+import { useCallback } from "react";
+import {
+  FlatList,
+  Pressable,
+  Text,
+  View,
+  useColorScheme,
+  Alert,
+} from "react-native";
+import { Trash } from "lucide-react-native";
+import { useDeletePostMutation } from "@/hooks/usePostMutations";
+
+const CURRENT_USER_NAME = "you";
 
 const PostDetailsScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const post = usePostDetails(id);
-  const comments = useComments(id);
-  const [commentDraft, setCommentDraft] = useState("");
+  const navigation = useNavigation();
+  const post = usePostDetails(Number(id));
+  const comments = useComments(Number(id));
+  const addComment = useAddCommentMutation(Number(id));
+  const deletePost = useDeletePostMutation();
 
-  const handleSubmitComment = useCallback(() => {
-    if (!commentDraft.trim()) return;
-    // addComment.mutate({
-    //   body: commentDraft,
-    //   userId: 1,
-    //   authorName: CURRENT_USER_NAME,
-    // });
-    setCommentDraft("");
-  }, [commentDraft, addComment]);
+  const theme = useColorScheme();
+
+  const handleDelete = useCallback(() => {
+    Alert.alert("Delete Post?", "This action cannot be undone.", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          deletePost.mutate(Number(id));
+          navigation.goBack();
+        },
+      },
+    ]);
+  }, [deletePost, id, navigation]);
+
+  const handleSubmitComment = useCallback(
+    (comment: string) => {
+      if (!comment.trim()) return;
+      addComment.mutate({
+        body: comment,
+        userId: 1,
+        authorName: CURRENT_USER_NAME,
+      });
+    },
+    [addComment],
+  );
 
   if (post.isLoading) {
     return (
@@ -47,7 +79,27 @@ const PostDetailsScreen = () => {
 
   return (
     <ThemedView className={styles.container}>
-      <Stack.Screen options={{ title: `Post #${id}` }} />
+      <Stack.Screen
+        options={{
+          title: `Post #${id}`,
+          headerRight: () => (
+            <View>
+              <Pressable
+                onPress={handleDelete}
+                className="rounded-full p-1.5"
+                android_ripple={{ color: "", borderless: true }}
+              >
+                <ThemedText className="uppercase font-bold">
+                  <Trash
+                    size={20}
+                    color={theme === "dark" ? "white" : "black"}
+                  />
+                </ThemedText>
+              </Pressable>
+            </View>
+          ),
+        }}
+      />
 
       <FlatList
         className={styles.list.wrapper}
@@ -68,7 +120,9 @@ const PostDetailsScreen = () => {
             </ThemedText>
             <ThemedView className={styles.post.tagsContainer}>
               {post.data.tags.map((tag) => (
-                <Text className={styles.post.tag}>#{tag}</Text>
+                <Text className={styles.post.tag} key={tag}>
+                  #{tag}
+                </Text>
               ))}
             </ThemedView>
             <ReactionCount reactions={post.data.reactions} />
@@ -78,21 +132,8 @@ const PostDetailsScreen = () => {
               Comments{comments.data ? ` (${comments.data.length})` : ""}
             </ThemedText>
 
-            <ThemedView className={styles.comments.form.wrapper}>
-              <TextInput
-                value={commentDraft}
-                onChangeText={setCommentDraft}
-                placeholder="Write a comment..."
-                className={styles.comments.form.input}
-                onSubmitEditing={handleSubmitComment}
-              />
-              <Pressable
-                className={styles.comments.form.button}
-                onPress={handleSubmitComment}
-              >
-                <ThemedText>Send</ThemedText>
-              </Pressable>
-            </ThemedView>
+            <CommentForm onSubmit={handleSubmitComment} />
+
             {comments.isLoading && (
               <ThemedView className="mt-2">
                 <View className={clsx(styles.skeleton, "h-8 mb-2")} />
@@ -130,12 +171,6 @@ const styles = {
   },
   comments: {
     title: "text-lg font-semibold",
-    form: {
-      wrapper: "flex flex-row items-center gap-2 mt-2 mb-4",
-      input:
-        "border border-gray-300 rounded-xl px-3 py-2 flex-1 text-black placeholder:text-gray-500 dark:text-white",
-      button: "bg-blue-500 py-2.5 px-4 rounded-xl",
-    },
     item: {
       title: "font-semibold mb-1 text-gray-800 dark:text-gray-200",
       body: "text-gray-600 dark:text-gray-400",

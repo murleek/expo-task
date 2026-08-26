@@ -3,7 +3,7 @@ import { mapComment } from "@/api/types";
 import { commentKeys } from "@/constants/keys";
 import { useQuery } from "@tanstack/react-query";
 
-export function useComments(postId: string) {
+export function useComments(postId: number) {
   return useQuery({
     queryKey: commentKeys.byPost(postId),
     queryFn: async () => {

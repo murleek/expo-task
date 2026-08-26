@@ -2,7 +2,6 @@ import { Post } from "@/api/types";
 import { View, Text } from "react-native";
 import clsx from "clsx";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import ThemedText from "./ThemedText";
 
 const ReactionCount = ({ reactions }: { reactions: Post["reactions"] }) => {
   const tap = Gesture.Tap()

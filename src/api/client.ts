@@ -53,9 +53,9 @@ export const http = {
     params?: Record<string, string | number | undefined>,
   ) => apiClient<T>(path, { method: "GET", params }),
   post: <T>(path: string, body: unknown) =>
-    apiClient<T>(path, { method: "POST", body: JSON.stringify(body) }),
+    apiClient<T>(path, { method: "POST", body: body }),
   put: <T>(path: string, body: unknown) =>
-    apiClient<T>(path, { method: "PUT", body: JSON.stringify(body) }),
+    apiClient<T>(path, { method: "PUT", body: body }),
   delete: <T>(path: string) => apiClient<T>(path, { method: "DELETE" }),
 };
 

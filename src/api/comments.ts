@@ -1,7 +1,7 @@
 import { http } from "./client";
 import { CommentsPageDto } from "./types";
 
-export async function getComments(postId: string): Promise<CommentsPageDto> {
+export async function getComments(postId: number): Promise<CommentsPageDto> {
   return http.get<CommentsPageDto>(`/comments/post/${postId}`);
 }
 

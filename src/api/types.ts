@@ -40,7 +40,7 @@ export interface Post {
 }
 
 export type PostsResponse = {
-  posts: Post[];
+  posts: PostDto[];
   total: number;
   skip: number;
   limit: number;

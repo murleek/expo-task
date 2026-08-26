@@ -13,7 +13,7 @@ const PostItem = ({ post }: { post: Post }) => {
   const router = useRouter();
 
   const handlePress = useCallback(
-    (id: string) => {
+    (id: number) => {
       prefetchPostDetails(queryClient, id);
       router.navigate({
         pathname: "/post",
@@ -25,8 +25,8 @@ const PostItem = ({ post }: { post: Post }) => {
 
   return (
     <Pressable
-      onPress={handlePress.bind(null, post.id.toString())}
-      android_ripple={{ color: "#ccc" }}
+      onPress={handlePress.bind(null, post.id)}
+      android_ripple={{ color: "" }}
       className={styles.pressable}
     >
       <ThemedView className={styles.container}>

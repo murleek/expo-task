@@ -3,7 +3,7 @@ import { mapPost, Post, PostsPageDto } from "@/api/types";
 import { postKeys } from "@/constants/keys";
 import { InfiniteData, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function usePostDetails(id: string) {
+export function usePostDetails(id: number) {
   const queryClient = useQueryClient();
 
   const post = useQuery({
@@ -36,7 +36,7 @@ function findPostInFeedCache(
 
 export function prefetchPostDetails(
   queryClient: ReturnType<typeof useQueryClient>,
-  id: string,
+  id: number,
 ) {
   queryClient.query({
     queryKey: postKeys.detail(id),

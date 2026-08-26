@@ -12,7 +12,7 @@ export function getPosts(params: {
   return http.get<PostsResponse>("/posts", params);
 }
 
-export function getPost(id: string) {
+export function getPost(id: number) {
   return http.get<PostDto>(`/posts/${id}`);
 }
 
@@ -32,6 +32,6 @@ export function updatePost(
   return http.put<PostDto>(`/posts/${id}`, { body: data });
 }
 
-export function deletePost(id: string) {
-  return http.delete<{ id: string; isDeleted: boolean }>(`/posts/${id}`);
+export function deletePost(id: number) {
+  return http.delete<{ id: number; isDeleted: boolean }>(`/posts/${id}`);
 }
