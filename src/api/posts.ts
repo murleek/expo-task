@@ -1,5 +1,5 @@
 import { apiClient } from "./client";
-import { Post, PostsResponse } from "./types";
+import { PostDto, PostsResponse } from "./types";
 
 export function getPosts(params: {
   skip: number;
@@ -14,8 +14,8 @@ export function getPosts(params: {
   return apiClient<PostsResponse>("/posts", { params });
 }
 
-export function getPost(id: number) {
-  return apiClient<Post>(`/posts/${id}`);
+export function getPost(id: string) {
+  return apiClient<PostDto>(`/posts/${id}`);
 }
 
 export function createPost(data: {
@@ -24,18 +24,18 @@ export function createPost(data: {
   tags: string[];
   userId: number;
 }) {
-  return apiClient<Post>("/posts/add", { method: "POST", body: data });
+  return apiClient<PostDto>("/posts/add", { method: "POST", body: data });
 }
 
 export function updatePost(
-  id: number,
-  data: Partial<Pick<Post, "title" | "body" | "tags">>,
+  id: string,
+  data: Partial<Pick<PostDto, "title" | "body" | "tags">>,
 ) {
-  return apiClient<Post>(`/posts/${id}`, { method: "PUT", body: data });
+  return apiClient<PostDto>(`/posts/${id}`, { method: "PUT", body: data });
 }
 
-export function deletePost(id: number) {
-  return apiClient<Post & { isDeleted: boolean }>(`/posts/${id}`, {
+export function deletePost(id: string) {
+  return apiClient<{ id: string; isDeleted: boolean }>(`/posts/${id}`, {
     method: "DELETE",
   });
 }

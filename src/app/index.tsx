@@ -6,6 +6,7 @@ import { usePosts } from "@/hooks/usePosts";
 import { useMemo } from "react";
 import PostItem from "@/components/PostItem";
 import { useQueryClient } from "@tanstack/react-query";
+import ThemedView from "@/components/ThemedView";
 
 export default function Home() {
   const { data, isFetching, isRefetching, refetch, fetchNextPage } =
@@ -32,9 +33,9 @@ export default function Home() {
   }, [data]);
 
   return (
-    <View className={styles.container}>
+    <ThemedView className={styles.container}>
       <Stack.Screen options={{ title: "Feed" }} />
-      <View style={{ flex: 1, alignItems: "center" }}>
+      <ThemedView style={{ flex: 1, alignItems: "center" }}>
         <FlatList
           data={posts}
           keyExtractor={(item) => item.id.toString()}
@@ -55,13 +56,12 @@ export default function Home() {
             ) : null
           }
         />
-      </View>
-    </View>
+      </ThemedView>
+    </ThemedView>
   );
 }
 
 const styles = {
-  container:
-    "flex flex-1 bg-white items-center justify-end text-black dark:bg-black dark:text-white",
+  container: "flex flex-1 items-center justify-end",
   buttonWrapper: "mx-4",
 };

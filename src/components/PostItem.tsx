@@ -1,27 +1,46 @@
 import { Post } from "@/api/types";
-import { View, Text } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 import ReactionCount from "./ReactionCount";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
+import { useCallback } from "react";
+import { prefetchPostDetails } from "@/hooks/usePostDetails";
+import ThemedView from "./ThemedView";
+import ThemedText from "./ThemedText";
 
 const PostItem = ({ post }: { post: Post }) => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  const handlePress = useCallback(
+    (id: number) => {
+      prefetchPostDetails(queryClient, id);
+      router.navigate({
+        pathname: "/post",
+        params: { id },
+      });
+    },
+    [router, queryClient],
+  );
+
   return (
     <Pressable
-      onPress={() => alert("Pressed!")}
+      onPress={handlePress.bind(null, post.id)}
       android_ripple={{ color: "#ccc" }}
       className={styles.pressable}
     >
-      <View className={styles.container}>
-        <Text className={styles.title}>{post.title}</Text>
-        <Text className={styles.body}>{post.body}</Text>
-        <View className={styles.tagsContainer}>
+      <ThemedView className={styles.container}>
+        <ThemedText className={styles.title}>{post.title}</ThemedText>
+        <ThemedText className={styles.body}>{post.body}</ThemedText>
+        <ThemedView className={styles.tagsContainer}>
           {post.tags.map((tag) => (
-            <Text key={tag} className={styles.tag}>
+            <ThemedText key={tag} className={styles.tag}>
               #{tag}
-            </Text>
+            </ThemedText>
           ))}
-        </View>
+        </ThemedView>
         <ReactionCount post={post} />
-      </View>
+      </ThemedView>
     </Pressable>
   );
 };
