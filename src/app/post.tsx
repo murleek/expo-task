@@ -60,7 +60,7 @@ const PostDetailsScreen = () => {
               {post.data.title}
             </ThemedText>
             <ThemedText className={styles.post.author}>
-              Author #{post.data.userId}
+              Author #{post.data.userId || 0}
             </ThemedText>
             <ThemedText className={styles.post.body}>
               {post.data.body}
@@ -115,13 +115,13 @@ const PostDetailsScreen = () => {
 
 const styles = {
   container: "flex-1",
-  skeleton: "bg-gray-300 rounded-md animate-pulse dark:bg-gray-800",
+  skeleton: "bg-gray-200 rounded-md animate-pulse dark:bg-gray-800",
   post: {
     title: "text-2xl font-bold",
-    author: "text-sm text-gray-600 dark:text-gray-400 mb-4",
-    body: "text-gray-800 dark:text-gray-200 mb-4",
+    author: "text-sm text-gray-600 dark:text-gray-400 mb-2",
+    body: "text-gray-800 dark:text-gray-200 mb-2",
     tagsContainer: "flex flex-row flex-wrap mb-2",
-    tag: "text-blue-500 py-1 mr-2 rounded-full text-xs",
+    tag: "text-blue-300 py-1 mr-2 rounded-full text-sm font-semibold",
   },
   hr: "h-[1px] my-2 bg-gray-300 dark:bg-gray-700 rounded",
   list: {

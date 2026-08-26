@@ -35,35 +35,34 @@ export default function Home() {
   return (
     <ThemedView className={styles.container}>
       <Stack.Screen options={{ title: "Feed" }} />
-      <ThemedView style={{ flex: 1, alignItems: "center" }}>
-        <FlatList
-          data={posts}
-          keyExtractor={(item) => item.id.toString()}
-          refreshing={isRefetching}
-          onRefresh={onRefresh}
-          contentContainerClassName="pb-safe-offset-4 bg-white dark:bg-black"
-          renderItem={({ item }) => <PostItem post={item} />}
-          onEndReachedThreshold={0.5}
-          onEndReached={onEndReached}
-          scrollEventThrottle={16}
-          ListFooterComponent={
-            isFetching ? (
-              <View className="flex-1 items-center justify-center">
-                <ActivityIndicator
-                  size="large"
-                  color="#0000ff"
-                  className="my-4"
-                />
-              </View>
-            ) : null
-          }
-        />
-      </ThemedView>
+      <FlatList
+        data={posts}
+        keyExtractor={(item) => item.id.toString()}
+        refreshing={isRefetching}
+        onRefresh={onRefresh}
+        className="bg-white dark:bg-black flex-1"
+        contentContainerClassName="pb-safe-offset-4"
+        renderItem={({ item }) => <PostItem post={item} />}
+        onEndReachedThreshold={0.5}
+        onEndReached={onEndReached}
+        scrollEventThrottle={16}
+        ListFooterComponent={
+          isFetching ? (
+            <ThemedView className="flex-1 items-center justify-center">
+              <ActivityIndicator
+                size="large"
+                color="#0000ff"
+                className="my-4"
+              />
+            </ThemedView>
+          ) : null
+        }
+      />
     </ThemedView>
   );
 }
 
 const styles = {
-  container: "flex flex-1 items-center justify-end",
+  container: "flex flex-1 items-stretch justify-end",
   buttonWrapper: "mx-4",
 };

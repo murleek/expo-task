@@ -51,7 +51,7 @@ const styles = {
   title: "text-lg font-bold mb-2 text-black dark:text-white",
   body: "text-gray-700 dark:text-gray-300 mb-2",
   tagsContainer: "flex flex-row flex-wrap",
-  tag: "text-blue-300 dark:text-gray-200 py-1 mr-2 rounded-full text-sm font-semibold",
+  tag: "text-blue-300 mr-2 rounded-full text-sm font-semibold",
 };
 
 export default PostItem;

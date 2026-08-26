@@ -1,5 +1,5 @@
 import { Post } from "@/api/types";
-import { View, Text, Pressable, TouchableHighlight } from "react-native";
+import { View, Text } from "react-native";
 import clsx from "clsx";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
@@ -36,8 +36,8 @@ const styles = {
   container: "flex-row items-center mt-2",
   reactionContainer:
     "bg-gray-100 dark:bg-gray-700 rounded-full px-2 py-1 mr-2 flex-row items-center",
-  reactionText: "text-gray-300 text-sm",
-  iconText: "text-gray-500 text-xl leading-none mr-2",
+  reactionText: "text-gray-400 dark:text-gray-300 text-sm",
+  iconText: "text-xl leading-none mr-2",
 };
 
 export default ReactionCount;
