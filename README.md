@@ -1,56 +1,154 @@
-# Welcome to your Expo app 👋
+# Social Feed
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Мобільний застосунок зі стрічкою постів на базі DummyJSON. Проєкт демонструє роботу з нескінченною стрічкою, кешем TanStack Query, optimistic UI, локальними змінами, коментарями та нативним bottom sheet.
 
-## Get started
+## Стек
 
-1. Install dependencies
+- Expo SDK 57, React Native 0.86 та React 19.2 (New Architecture)
+- TypeScript
+- Expo Router — файловий роутинг поверх React Navigation
+- TanStack Query v5
+- `@shopify/flash-list`
+- `@gorhom/bottom-sheet` v5, Reanimated і Gesture Handler
+- `react-native-keyboard-controller`
+- `react-native-mmkv`
+- Zustand і NativeWind
+- [DummyJSON](https://dummyjson.com/) як API
 
-   ```bash
-   npm install
-   ```
+## Запуск
 
-2. Start the app
+### Передумови
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Потрібні Node.js, npm і середовище для збірки Android або iOS, описане в [Expo documentation](https://docs.expo.dev/get-started/set-up-your-environment/). Для iOS потрібен macOS і Xcode.
 
 ```bash
-npm run reset-project
+cd project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Застосунок використовує MMKV — це нативний JSI-модуль, тому **Expo Go не підтримується**. Потрібен development build:
 
-### Other setup steps
+```bash
+# Android
+npm run android
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+# iOS (лише macOS)
+npm run ios
+```
 
-## Learn more
+Після першої збірки для запуску Metro використовуйте:
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+npx expo start --dev-client
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Після зміни нативних залежностей або конфігурації Expo development build потрібно зібрати повторно. Для перевірки типів/правил проєкту доступний `npm run lint`.
 
-## Join the community
+## Реалізовані можливості
 
-Join our community of developers creating universal apps.
+- Стрічка постів із пошуком і debounce 300 мс.
+- Нескінченне завантаження сторінок, pull-to-refresh та індикатор завантаження.
+- Екран поста з повним текстом, реакціями та коментарями.
+- Створення й редагування постів у bottom sheet, видалення з нативним підтвердженням.
+- Додавання коментарів із коректною поведінкою клавіатури.
+- Optimistic create/update/delete для постів і optimistic додавання коментарів із rollback при помилці.
+- Персистентні локальні пости, редагування, видалення, коментарі та останній пошуковий запит.
+- Світла/темна тема, safe areas, skeleton для екрана деталей і мемоїзовані рядки коментарів.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Структура
+
+```text
+src/
+├── api/          # HTTP-клієнт, DummyJSON endpoints, DTO та TanStack Query client
+├── app/          # Expo Router: layout, feed і post details
+├── components/   # презентаційні компоненти та PostFormSheet
+├── constants/    # ієрархічні query keys
+├── hooks/        # queries, mutations, debounce і cache orchestration
+├── storage/      # MMKV та накладання локальних змін на відповідь API
+└── store/        # короткоживучий UI-стан bottom sheet у Zustand
+```
+
+UI-компоненти не звертаються до API напряму: запити, перетворення DTO, кеш і мутації винесено в `api/` та `hooks/`. Це зберігає екрани простими та дозволяє окремо тестувати правила роботи з даними.
+
+## Навігація
+
+Обрано Expo Router. Він використовує React Navigation усередині, але дає типовий для Expo файловий роутинг і типізовані маршрути. `src/app/index.tsx` відповідає за стрічку, а `src/app/post.tsx` — за деталі; `_layout.tsx` підключає спільні провайдери.
+
+Корінь застосунку містить `GestureHandlerRootView`, `SafeAreaProvider`, `QueryClientProvider`, `KeyboardProvider` і `BottomSheetModalProvider`. Це важливо для edge-to-edge Android, жестів, анімацій, safe areas і взаємодії інпутів з клавіатурою.
+
+## Стан і TanStack Query
+
+TanStack Query є джерелом правди для серверних даних. Zustand використано лише для ефемерного UI-стану форми (`isOpen` та пост, що редагується); дублювати в ньому дані стрічки не потрібно.
+
+### Query keys
+
+Ключі в `src/constants/keys.ts` мають ієрархію:
+
+```
+["posts"]
+["posts", "list"]
+["posts", "list", { search }]
+["posts", "detail", postId]
+["comments", "post", postId]
+```
+
+Такий поділ дозволяє скасувати або оновити всі списки постів, окремий пост чи коментарі лише конкретного поста, не зачіпаючи інші дані.
+
+### Свіжість та повторне використання кешу
+
+- Стрічка: `staleTime: 30_000`. Дані можуть змінюватися, але немає сенсу повторно запитувати їх при кожному поверненні на екран.
+- Деталі поста: `staleTime: 5 * 60_000`. Пост зазвичай стабільніший; дані зі стрічки передаються як `initialData`, тож екран відкривається одразу.
+- Коментарі: `staleTime: 10_000`, бо це найдинамічніша частина екрана.
+- Для `gcTime` залишено стандартне значення TanStack Query — 5 хвилин: неактивний кеш вивільняється без зайвого споживання пам’яті. Політика свіжості визначена саме в кожному query, де контекст даних відрізняється.
+
+При натисканні на пост `prefetchPostDetails` прогріває detail query. `usePostDetails` також шукає пост серед уже завантажених сторінок infinite query через `getQueriesData`, а потім підставляє його як `initialData`. Це дає миттєвий перший рендер; для локального поста дані беруться зі сховища. Коментарі мають окремий query і завантажуються незалежно.
+
+### Infinite feed
+
+`usePosts` використовує `useInfiniteQuery` зі сторінкою по 20 елементів. Наступне зміщення обчислюється як `skip + limit`; воно повертається лише коли менше за `total`. FlashList отримує плаский масив сторінок, стабільний `keyExtractor` за `id` і поріг дозавантаження `0.5`.
+
+## Optimistic updates і rollback
+
+Для create, update та delete постів, а також додавання коментаря послідовність така:
+
+1. `onMutate` скасовує активні запити, зберігає snapshot відповідних query і одразу змінює кеш через `setQueriesData`/`setQueryData`.
+2. UI відображає результат без очікування мережі.
+3. `onError` відновлює snapshot, тобто виконує rollback.
+4. Після успіху результат фіксується в MMKV; detail queries інвалідовуються або видаляються, коли це доречно.
+
+DummyJSON імітує мутації, але не зберігає їх на сервері. Тому безумовний refetch після кожної мутації знищив би зміни користувача. Локальний журнал змін є довготривалим джерелом цих «фейкових» мутацій, а відповіді сервера щоразу проходять через reconciliation.
+
+## Локальне сховище і reconciliation
+
+Використано MMKV. Це синхронне key-value сховище на JSI: воно швидко читається під час ініціалізації UI (наприклад, останній пошук) і підходить для невеликих JSON-структур зі змінами користувача.
+
+| Критерій       | MMKV                                 | AsyncStorage                                       |
+| -------------- | ------------------------------------ | -------------------------------------------------- |
+| API            | Переважно синхронний                 | Асинхронний Promise API                            |
+| Продуктивність | JSI, добре для частих дрібних читань | Достатня для більшості задач, але з async overhead |
+| Шифрування     | Підтримує encryption key             | Не є сховищем секретів                             |
+| Запуск         | Потрібен development build           | Працює в Expo Go                                   |
+
+MMKV обрано свідомо ціною development build. Для токенів, паролів або ключів API варто використовувати `expo-secure-store`: це захищене сховище секретів, а не заміна для кешу або великих даних.
+
+У `storage/posts.ts` зберігаються окремо:
+
+- `created` — локально створені пости з від’ємними ID;
+- `edited` — patch для серверних постів;
+- `deleted` — ID прихованих серверних постів.
+
+Під час отримання сторінки `refactorPosts` спочатку прибирає видалені пости, потім накладає edits і, на першій сторінці, додає локально створені пости. Під час завантаження деталей `refactorPost` застосовує той самий edit patch. Для коментарів локально створені елементи додаються перед серверним списком. Тому refetch або перезапуск застосунку не повертає видалені елементи й не губить локальні зміни.
+
+Кеш TanStack Query навмисно не персиститься: він відтворюваний із мережі, а MMKV містить лише необхідний доменний журнал змін і UI preference. Це зменшує ризик показати застарілу серверну стрічку після запуску.
+
+## Bottom sheet і клавіатура
+
+Форма створення/редагування — `@gorhom/bottom-sheet` v5 з одним snap point `85%`, swipe-to-close та інтерактивною поведінкою клавіатури. Усередині використані сумісні обгортки бібліотеки — `BottomSheetScrollView` та `BottomSheetTextInput`, щоб скрол, фокус і жести координувалися з sheet. Коментарі використовують `KeyboardAvoidingView`, `KeyboardChatScrollView` і `KeyboardStickyView` із `react-native-keyboard-controller`, отже поле введення і коментарі не перекривається клавіатурою.
+
+## Продуктивність списків
+
+Обрано FlashList замість FlatList, бо вона краще підходить для потенційно довгої стрічки: список віртуалізований і не монтує всі рядки одразу. Ідентифікатор поста/коментаря використовується як стабільний ключ; список постів обчислюється через `useMemo`, callbacks — через `useCallback`, а `CommentItem` мемоїзовано. За появи дуже великих або неоднорідних карток варто додати вимірювання/оцінку розмірів елементів і профілювати ререндери на цільових пристроях.
+
+## Відоме обмеження API
+
+DummyJSON не зберігає POST/PUT/DELETE. Застосунок компенсує це локальним журналом MMKV, але ці зміни існують лише на конкретному пристрої та не синхронізуються з іншими користувачами.
