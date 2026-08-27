@@ -9,6 +9,7 @@ import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { PostFormSheet } from "@/components/PostFormSheet";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ export default function Layout() {
                 },
               }}
             />
+            <PostFormSheet />
             <StatusBar style={themeStyles.statusBarStyle} />
           </BottomSheetModalProvider>
         </QueryClientProvider>

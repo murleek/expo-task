@@ -8,7 +8,7 @@ import { useComments } from "@/hooks/useComments";
 import { usePostDetails } from "@/hooks/usePostDetails";
 import { clsx } from "clsx";
 import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import {
   FlatList,
   Pressable,
@@ -17,8 +17,9 @@ import {
   useColorScheme,
   Alert,
 } from "react-native";
-import { Trash } from "lucide-react-native";
+import { Pencil, Trash } from "lucide-react-native";
 import { useDeletePostMutation } from "@/hooks/usePostMutations";
+import { usePostFormSheetStore } from "@/store/postFormSheet";
 
 const CURRENT_USER_NAME = "you";
 
@@ -29,6 +30,7 @@ const PostDetailsScreen = () => {
   const comments = useComments(Number(id));
   const addComment = useAddCommentMutation(Number(id));
   const deletePost = useDeletePostMutation();
+  const openForEdit = usePostFormSheetStore((s) => s.openForEdit);
 
   const theme = useColorScheme();
 
@@ -58,12 +60,18 @@ const PostDetailsScreen = () => {
     [addComment],
   );
 
+  const headerTitle = useMemo(() => {
+    if (post.error || (!post.isLoading && !post.data)) return "Error";
+    if (Number(id) < 0) return `Local Post #${Math.abs(Number(id))}`;
+    return `Post #${id}`;
+  }, [post, id]);
+
   if (post.isLoading) {
     return (
       <ThemedView className="flex-1 p-4">
         <Stack.Screen
           options={{
-            title: `Post #${id}`,
+            title: headerTitle,
           }}
         />
         <View className={clsx(styles.skeleton, "h-5 mb-2 ")} />
@@ -79,7 +87,7 @@ const PostDetailsScreen = () => {
       <ThemedView className="flex-1 p-4">
         <Stack.Screen
           options={{
-            title: `Post #${id}`,
+            title: headerTitle,
           }}
         />
         <ThemedText>Error loading post.</ThemedText>
@@ -91,9 +99,21 @@ const PostDetailsScreen = () => {
     <ThemedView className={styles.container}>
       <Stack.Screen
         options={{
-          title: `Post #${id}`,
+          title: headerTitle,
           headerRight: () => (
-            <View>
+            <View className="flex-row gap-3">
+              <Pressable
+                onPress={() => post.data && openForEdit(post.data)}
+                className="rounded-full p-1.5"
+                android_ripple={{ color: "", borderless: true }}
+              >
+                <ThemedText className="uppercase font-bold">
+                  <Pencil
+                    size={20}
+                    color={theme === "dark" ? "white" : "black"}
+                  />
+                </ThemedText>
+              </Pressable>
               <Pressable
                 onPress={handleDelete}
                 className="rounded-full p-1.5"

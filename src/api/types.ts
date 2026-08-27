@@ -6,6 +6,7 @@ export interface PostDto {
   reactions: { likes: number; dislikes: number };
   views: number;
   userId: number;
+  isLocalOnly?: boolean;
 }
 
 export type PostsPageDto = {

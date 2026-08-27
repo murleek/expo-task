@@ -1,11 +1,11 @@
-import { Post } from "@/api/types";
+import { Post, PostDto } from "@/api/types";
 import { getJSON, setJSON } from ".";
 
 const KEY = "posts-v1";
 
 interface PostsState {
-  created: Record<number, Post>;
-  edited: Record<number, Partial<Post>>;
+  created: Record<number, PostDto>;
+  edited: Record<number, Partial<PostDto>>;
   deleted: number[];
   nextLocalId: number;
 }
@@ -25,10 +25,10 @@ const write = (store: typeof defaultStore) => {
   setJSON(KEY, store);
 };
 
-export const recordLocalPost = (post: Post) => {
+export const recordLocalPost = (post: Omit<PostDto, "id">) => {
   const state = readStore();
   const id = state.nextLocalId;
-  const created: Post = { ...post, id, isLocalOnly: true };
+  const created: PostDto = { ...post, id };
   state.created[id] = created;
   state.nextLocalId -= 1;
   write(state);
@@ -56,11 +56,11 @@ export function recordLocalDelete(id: number): void {
   write(state);
 }
 
-export function getLocalPosts(): Post[] {
-  return Object.values(readStore().created);
+export function getLocalPosts(): PostDto[] {
+  return Object.values(readStore().created).reverse();
 }
 
-export function getEditPatch(id: number): Partial<Post> | undefined {
+export function getEditPatch(id: number): Partial<PostDto> | undefined {
   return readStore().edited[id];
 }
 

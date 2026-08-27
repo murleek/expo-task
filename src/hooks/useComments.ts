@@ -9,6 +9,7 @@ export function useComments(postId: number) {
   return useQuery({
     queryKey: commentKeys.byPost(postId),
     queryFn: async () => {
+      if (postId < 0) return getLocalComments(postId);
       const page = await getComments(postId);
       return refactorComments(postId, page.comments.map(mapComment));
     },
@@ -18,7 +19,6 @@ export function useComments(postId: number) {
 
 export const refactorComments = (postId: number, comments: Comment[]) => {
   const localComments = getLocalComments(postId);
-  console.log("localComments", localComments);
   comments = [...localComments, ...comments];
   return comments;
 };

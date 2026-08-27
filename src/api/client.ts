@@ -40,7 +40,7 @@ async function apiClient<T>(
   if (!response.ok) {
     throw new ApiError(
       response.status,
-      `Request failed: ${response.status} ${path}`,
+      `Request failed: ${response.status} ${path} ${body ? JSON.stringify(body) : undefined} ${await response.text()}`,
     );
   }
 
@@ -53,9 +53,9 @@ export const http = {
     params?: Record<string, string | number | undefined>,
   ) => apiClient<T>(path, { method: "GET", params }),
   post: <T>(path: string, body: unknown) =>
-    apiClient<T>(path, { method: "POST", body: body }),
+    apiClient<T>(path, { method: "POST", body }),
   put: <T>(path: string, body: unknown) =>
-    apiClient<T>(path, { method: "PUT", body: body }),
+    apiClient<T>(path, { method: "PUT", body }),
   delete: <T>(path: string) => apiClient<T>(path, { method: "DELETE" }),
 };
 

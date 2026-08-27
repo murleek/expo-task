@@ -15,8 +15,9 @@ export function useAddCommentMutation(postId: number) {
       userId: number;
       authorName: string;
     }) => {
-      await addComment({ body: input.body, postId, userId: input.userId });
-
+      if (postId >= 0) {
+        await addComment({ body: input.body, postId, userId: input.userId });
+      }
       return recordLocalComment({
         id: localCommentId--,
         postId,

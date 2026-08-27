@@ -22,14 +22,13 @@ export function createPost(data: {
   tags: string[];
   userId: number;
 }) {
-  return http.post<PostDto>("/posts/add", { body: data });
+  return http.post<PostDto>("/posts/add", data);
 }
 
 export function updatePost(
-  id: string,
-  data: Partial<Pick<PostDto, "title" | "body" | "tags">>,
+  data: Partial<Pick<PostDto, "title" | "body" | "tags" | "id">>,
 ) {
-  return http.put<PostDto>(`/posts/${id}`, { body: data });
+  return http.put<PostDto>(`/posts/${data.id}`, data);
 }
 
 export function deletePost(id: number) {

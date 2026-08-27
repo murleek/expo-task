@@ -3,7 +3,8 @@ export const postKeys = {
   lists: () => [...postKeys.all, "list"] as const,
   list: (filters: { search: string }) =>
     filters ? ([...postKeys.lists(), filters] as const) : postKeys.lists(),
-  detail: (id: number) => [...postKeys.all, "detail", id] as const,
+  details: () => [...postKeys.all, "detail"] as const,
+  detail: (id: number) => [...postKeys.details(), id] as const,
 };
 
 export const commentKeys = {
