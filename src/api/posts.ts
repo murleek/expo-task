@@ -1,12 +1,8 @@
 import { http } from "./client";
 import { PostDto, PostsResponse } from "./types";
 
-export function getPosts(params: {
-  skip: number;
-  limit: number;
-  search?: string;
-}) {
-  if (params.search) {
+export function getPosts(params: { skip: number; limit: number; q?: string }) {
+  if (params.q) {
     return http.get<PostsResponse>("/posts/search", params);
   }
   return http.get<PostsResponse>("/posts", params);

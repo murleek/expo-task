@@ -13,12 +13,12 @@ export function usePosts(search: string) {
       const page = await getPosts({
         skip: pageParam,
         limit: LIMIT,
-        search,
+        q: search,
       });
 
       return {
         ...page,
-        posts: refactorPosts(page.posts.map(mapPost), page.skip),
+        posts: refactorPosts(page.posts.map(mapPost), page.skip, search),
       };
     },
     initialPageParam: 0,
@@ -30,7 +30,11 @@ export function usePosts(search: string) {
   });
 }
 
-export const refactorPosts = (posts: Post[], pageSkip: number) => {
+export const refactorPosts = (
+  posts: Post[],
+  pageSkip: number,
+  search: string,
+) => {
   const withoutDeleted = posts.filter((p) => !isDeletedLocally(p.id));
   const withLocalEdits = withoutDeleted.map((p) => {
     const patch = getEditPatch(p.id);
@@ -42,6 +46,12 @@ export const refactorPosts = (posts: Post[], pageSkip: number) => {
 
   const localOnly = getLocalPosts()
     .map(mapPost)
-    .filter((p) => !isDeletedLocally(p.id));
+    .filter((p) => !isDeletedLocally(p.id))
+    .filter(
+      (p) =>
+        p.title.includes(search) ||
+        p.body.includes(search) ||
+        p.tags.some((t) => t.includes(search)),
+    );
   return [...localOnly, ...withLocalEdits];
 };
