@@ -34,7 +34,6 @@ export const refactorPosts = (posts: Post[], pageSkip: number) => {
   const withoutDeleted = posts.filter((p) => !isDeletedLocally(p.id));
   const withLocalEdits = withoutDeleted.map((p) => {
     const patch = getEditPatch(p.id);
-    if (patch) console.log("assign patch", patch, "to", p);
     if (patch) return { ...p, ...patch };
     return p;
   });

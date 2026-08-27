@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Platform, Pressable, Text, KeyboardAvoidingView } from "react-native";
+import { Platform, Pressable, Text } from "react-native";
 import BottomSheet, {
   BottomSheetTextInput,
   BottomSheetBackdrop,
   BottomSheetScrollView,
+  BottomSheetBackdropProps,
 } from "@gorhom/bottom-sheet";
 import {
   useCreatePostMutation,
   useUpdatePostMutation,
 } from "@/hooks/usePostMutations";
 import { usePostFormSheetStore } from "@/store/postFormSheet";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 
 const CURRENT_USER_ID = 1;
 
@@ -60,19 +62,6 @@ export function PostFormSheet() {
     close,
   ]);
 
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-        enableTouchThrough={true}
-        pressBehavior="close"
-      />
-    ),
-    [],
-  );
-
   return (
     <BottomSheet
       ref={sheetRef}
@@ -80,16 +69,24 @@ export function PostFormSheet() {
       snapPoints={snapPoints}
       enablePanDownToClose
       onClose={close}
-      backdropComponent={renderBackdrop}
+      backdropComponent={(props: BottomSheetBackdropProps) => (
+        <BottomSheetBackdrop
+          {...props}
+          appearsOnIndex={1}
+          disappearsOnIndex={0}
+          enableTouchThrough={true}
+          pressBehavior="close"
+        />
+      )}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
     >
-      <BottomSheetScrollView className={styles.content}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          className="pb-safe-offset-2"
-        >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        className="pb-safe-offset-2"
+      >
+        <BottomSheetScrollView className={styles.content}>
           <Text className={styles.heading}>
             {editingPost ? "Edit Post" : "New Post"}
           </Text>
@@ -124,8 +121,8 @@ export function PostFormSheet() {
               {editingPost ? "Save" : "Publish"}
             </Text>
           </Pressable>
-        </KeyboardAvoidingView>
-      </BottomSheetScrollView>
+        </BottomSheetScrollView>
+      </KeyboardAvoidingView>
     </BottomSheet>
   );
 }

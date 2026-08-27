@@ -16,10 +16,16 @@ import {
   View,
   useColorScheme,
   Alert,
+  Platform,
 } from "react-native";
 import { Pencil, Trash } from "lucide-react-native";
 import { useDeletePostMutation } from "@/hooks/usePostMutations";
 import { usePostFormSheetStore } from "@/store/postFormSheet";
+import {
+  KeyboardAvoidingView,
+  KeyboardChatScrollView,
+} from "react-native-keyboard-controller";
+import { FlashList } from "@shopify/flash-list";
 
 const CURRENT_USER_NAME = "you";
 
@@ -96,7 +102,10 @@ const PostDetailsScreen = () => {
   }
 
   return (
-    <ThemedView className={styles.container}>
+    <KeyboardAvoidingView
+      className={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
       <Stack.Screen
         options={{
           title: headerTitle,
@@ -130,57 +139,59 @@ const PostDetailsScreen = () => {
           ),
         }}
       />
-
-      <FlatList
+      <KeyboardChatScrollView
         className={styles.list.wrapper}
         contentContainerClassName={styles.list.container}
-        data={comments.data ?? []}
-        keyExtractor={(c) => String(c.id)}
-        renderItem={({ item }) => <CommentItem comment={item} />}
-        ListHeaderComponent={
-          <ThemedView>
-            <ThemedText className={styles.post.title}>
-              {post.data.title}
-            </ThemedText>
-            <ThemedText className={styles.post.author}>
-              Author #{post.data.authorId || 0}
-            </ThemedText>
-            <ThemedText className={styles.post.body}>
-              {post.data.body}
-            </ThemedText>
-            <ThemedView className={styles.post.tagsContainer}>
-              {post.data.tags.map((tag) => (
-                <Text className={styles.post.tag} key={tag}>
-                  #{tag}
-                </Text>
-              ))}
-            </ThemedView>
-            <ReactionCount reactions={post.data.reactions} />
-
-            <View className={styles.hr} />
-
-            <ThemedText className={styles.comments.title}>
-              Comments{comments.data ? ` (${comments.data.length})` : ""}
-            </ThemedText>
-
-            {comments.isLoading && (
-              <ThemedView className="mt-2">
-                <View className={clsx(styles.skeleton, "h-16 mb-2")} />
-                <View className={clsx(styles.skeleton, "h-16 mb-2")} />
-                <View className={clsx(styles.skeleton, "h-16 mb-2")} />
-                <View className={clsx(styles.skeleton, "h-16 mb-2")} />
+      >
+        <FlashList
+          data={comments.data ?? []}
+          keyExtractor={(c) => String(c.id)}
+          renderItem={({ item }) => <CommentItem comment={item} />}
+          ListHeaderComponent={
+            <ThemedView>
+              <ThemedText className={styles.post.title}>
+                {post.data.title}
+              </ThemedText>
+              <ThemedText className={styles.post.author}>
+                Author #{post.data.authorId || 0}
+              </ThemedText>
+              <ThemedText className={styles.post.body}>
+                {post.data.body}
+              </ThemedText>
+              <ThemedView className={styles.post.tagsContainer}>
+                {post.data.tags.map((tag) => (
+                  <Text className={styles.post.tag} key={tag}>
+                    #{tag}
+                  </Text>
+                ))}
               </ThemedView>
-            )}
-          </ThemedView>
-        }
-        ListEmptyComponent={
-          !comments.isLoading ? (
-            <ThemedText>No comments yet.</ThemedText>
-          ) : undefined
-        }
-      />
+              <ReactionCount reactions={post.data.reactions} />
+
+              <View className={styles.hr} />
+
+              <ThemedText className={styles.comments.title}>
+                Comments{comments.data ? ` (${comments.data.length})` : ""}
+              </ThemedText>
+
+              {comments.isLoading && (
+                <ThemedView className="mt-2">
+                  <View className={clsx(styles.skeleton, "h-16 mb-2")} />
+                  <View className={clsx(styles.skeleton, "h-16 mb-2")} />
+                  <View className={clsx(styles.skeleton, "h-16 mb-2")} />
+                  <View className={clsx(styles.skeleton, "h-16 mb-2")} />
+                </ThemedView>
+              )}
+            </ThemedView>
+          }
+          ListEmptyComponent={
+            !comments.isLoading ? (
+              <ThemedText>No comments yet.</ThemedText>
+            ) : undefined
+          }
+        />
+      </KeyboardChatScrollView>
       <CommentForm onSubmit={handleSubmitComment} />
-    </ThemedView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -197,7 +208,7 @@ const styles = {
   hr: "h-[1px] my-2 mt-4 bg-gray-300 dark:bg-gray-700 rounded",
   list: {
     wrapper: "bg-white dark:bg-black flex-1",
-    container: "pb-safe-offset-20 px-4",
+    container: "pb-safe-offset-4 px-4",
   },
   comments: {
     title: "text-lg font-semibold py-2",

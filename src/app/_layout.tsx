@@ -10,6 +10,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { PostFormSheet } from "@/components/PostFormSheet";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 
 const queryClient = new QueryClient();
 
@@ -44,22 +45,24 @@ export default function Layout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <BottomSheetModalProvider>
-            <Stack
-              screenOptions={{
-                headerStyle: {
-                  backgroundColor: themeStyles.backgroundColor,
-                },
-                headerShadowVisible: false,
-                headerTintColor: themeStyles.headerTintColor,
-                headerTitleStyle: {
-                  fontWeight: "bold",
-                },
-              }}
-            />
-            <PostFormSheet />
-            <StatusBar style={themeStyles.statusBarStyle} />
-          </BottomSheetModalProvider>
+          <KeyboardProvider>
+            <BottomSheetModalProvider>
+              <Stack
+                screenOptions={{
+                  headerStyle: {
+                    backgroundColor: themeStyles.backgroundColor,
+                  },
+                  headerShadowVisible: false,
+                  headerTintColor: themeStyles.headerTintColor,
+                  headerTitleStyle: {
+                    fontWeight: "bold",
+                  },
+                }}
+              />
+              <PostFormSheet />
+              <StatusBar style={themeStyles.statusBarStyle} />
+            </BottomSheetModalProvider>
+          </KeyboardProvider>
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

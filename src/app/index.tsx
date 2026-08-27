@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { FlatList, ActivityIndicator, Pressable } from "react-native";
+import { ActivityIndicator, Pressable } from "react-native";
 import { Stack } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
-
+import { FlashList } from "@shopify/flash-list";
 import PostItem from "@/components/PostItem";
 import ThemedView from "@/components/ThemedView";
 import { usePosts } from "@/hooks/usePosts";
@@ -38,7 +38,7 @@ export default function Home() {
   return (
     <ThemedView className={styles.container}>
       <Stack.Screen options={{ title: "Feed" }} />
-      <FlatList
+      <FlashList
         data={posts}
         keyExtractor={(item) => item.id.toString()}
         refreshing={isRefetching}
