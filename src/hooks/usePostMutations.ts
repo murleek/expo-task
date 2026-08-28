@@ -173,7 +173,9 @@ export function useDeletePostMutation() {
 
   return useMutation({
     mutationFn: async (id: number) => {
-      await deletePost(id);
+      if (id >= 0) {
+        await deletePost(id);
+      }
       recordLocalDelete(id);
       return id;
     },
